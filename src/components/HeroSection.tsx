@@ -7,10 +7,10 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onScrollToForm }) => {
   return (
-    <section className="relative pt-12 pb-10 sm:pt-16 sm:pb-14 flex flex-col items-center text-center px-4 max-w-4xl mx-auto z-10">
-      {/* Animated Cute Cat */}
-      <div className="animate-gentle-bounce mb-3">
-        <CuteCat className="w-44 h-44 sm:w-52 sm:h-52 drop-shadow-sm" />
+    <section className="relative pt-8 pb-10 sm:pt-14 sm:pb-14 flex flex-col items-center text-center px-4 max-w-4xl mx-auto z-10">
+      {/* Animated Big Cute Cat */}
+      <div className="animate-gentle-bounce mb-3 relative flex justify-center">
+        <CuteCat className="w-72 h-72 sm:w-[350px] sm:h-[350px] md:w-[420px] md:h-[420px] lg:w-[460px] lg:h-[460px]" />
       </div>
 
       {/* Greeting */}
@@ -30,14 +30,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onScrollToForm }) => {
         Các cậu điền thông tin giúp tớ để tớ chuẩn bị chu đáo hơn nha!
       </p>
 
-      {/* Meo Meo Button matching screenshot */}
-      <div className="mt-6 sm:mt-7">
+      {/* Meo Meo Button in Tactile 3D style */}
+      <div className="mt-6 sm:mt-8">
         <button
           onClick={onScrollToForm}
-          className="group relative inline-flex items-center justify-center gap-2 px-8 py-3 rounded-full bg-[#FF6E97] hover:bg-[#FF5886] active:scale-95 text-white font-bold text-base sm:text-lg transition-all duration-200 cute-btn-shadow cursor-pointer"
+          type="button"
+          className="group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full btn-3d-pink text-white font-extrabold text-base sm:text-lg cursor-pointer select-none"
         >
           <span>Meo meo</span>
-          <span className="text-sm">🐾</span>
+          <span className="text-lg group-hover:scale-125 group-hover:rotate-12 transition-transform">🐾</span>
         </button>
       </div>
     </section>

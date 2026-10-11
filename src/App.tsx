@@ -60,44 +60,6 @@ export default function App() {
       {/* Background Floating Decorative Paws & Fish */}
       <FloatingDecorations />
 
-      {/* Top Floating Control Bar for Organizer / Google Sheets */}
-      <header className="relative z-30 max-w-5xl mx-auto px-4 pt-4 sm:pt-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xl sm:text-2xl">🐾</span>
-          <span className="font-extrabold text-[#3B2C37] text-sm sm:text-base tracking-wide">
-            iStar Party 20/10
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => setIsSheetsModalOpen(true)}
-            className="group inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full bg-white/90 hover:bg-white border border-[#FFCCD7] hover:border-[#FFAEC0] text-[#3B2C37] text-xs sm:text-sm font-bold shadow-xs hover:shadow-md transition-all cursor-pointer backdrop-blur-xs"
-            title="Quản lý dữ liệu và Google Sheets"
-          >
-            <span className="text-sm">📊</span>
-            <span className="hidden sm:inline">Google Sheets:</span>
-            {hasSheetLinked ? (
-              <span className="text-emerald-600 flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Đã kết nối</span>
-              </span>
-            ) : (
-              <span className="text-rose-500 flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-rose-400"></span>
-                <span>Chưa liên kết</span>
-              </span>
-            )}
-
-            {responseCount > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-pink-100 text-[#FF5886] text-[11px] font-extrabold">
-                {responseCount}
-              </span>
-            )}
-          </button>
-        </div>
-      </header>
-
       {/* Main Content Sections */}
       <main className="relative z-10 pb-16">
         {/* Section 1: Hero with cute cat, greeting & meo meo button */}
@@ -110,6 +72,7 @@ export default function App() {
         <SurveyForm
           formRef={formRef}
           onSubmissionSuccess={handleDataUpdated}
+          onOpenAdmin={() => setIsSheetsModalOpen(true)}
         />
       </main>
 

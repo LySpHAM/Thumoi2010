@@ -181,12 +181,12 @@ export const MusicPlayer: React.FC = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-1 ml-1">
+          <div className="flex items-center gap-1.5 ml-1">
             {/* Play / Pause Toggle Button */}
             <button
               onClick={togglePlay}
               type="button"
-              className="w-8 h-8 rounded-full bg-[#FFF0F4] hover:bg-[#FFE0E9] text-[#FF5886] flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full btn-3d-pink text-white flex items-center justify-center text-xs font-bold cursor-pointer select-none"
               title={isPlaying ? 'Tạm dừng' : 'Bật nhạc'}
             >
               {isPlaying ? '❚❚' : '▶'}
@@ -196,7 +196,7 @@ export const MusicPlayer: React.FC = () => {
             <button
               onClick={toggleMute}
               type="button"
-              className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-800 flex items-center justify-center text-xs transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full btn-3d-secondary flex items-center justify-center text-xs cursor-pointer select-none"
               title={isMuted ? 'Bật âm thanh' : 'Tắt tiếng'}
             >
               {isMuted ? '🔇' : '🔊'}

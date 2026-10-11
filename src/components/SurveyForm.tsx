@@ -13,11 +13,13 @@ import { getAccessToken } from '../lib/firebase';
 interface SurveyFormProps {
   onSubmissionSuccess?: (submission: SurveySubmission) => void;
   formRef?: React.RefObject<HTMLDivElement | null>;
+  onOpenAdmin?: () => void;
 }
 
 export const SurveyForm: React.FC<SurveyFormProps> = ({
   onSubmissionSuccess,
   formRef,
+  onOpenAdmin,
 }) => {
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
@@ -163,7 +165,8 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
             <div>
               <button
                 onClick={handleReset}
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#FFF0F4] hover:bg-[#FFE3EC] text-[#FF5886] font-bold text-sm sm:text-base border border-[#FFAEC0] transition-all cursor-pointer"
+                type="button"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full btn-3d-pink text-white font-extrabold text-sm sm:text-base cursor-pointer"
               >
                 <span>Điền phản hồi khác</span>
                 <span>✨</span>
@@ -239,7 +242,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
               <label className="block text-sm sm:text-base font-bold text-[#3B2C37] mb-2.5">
                 Cậu có chắc chắn sẽ tham gia cùng chúng tớ không nè?
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
                   'Chắc chắn có mặt nha! 🥳',
                   'Tớ sẽ cố gắng đến nè 🥰',
@@ -249,10 +252,10 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
                     key={opt}
                     type="button"
                     onClick={() => setAttending(opt)}
-                    className={`px-3.5 py-3 rounded-2xl text-xs sm:text-sm font-bold text-center border transition-all cursor-pointer ${
+                    className={`px-3.5 py-3.5 rounded-2xl text-xs sm:text-sm font-bold text-center cursor-pointer transition-all ${
                       attending === opt
-                        ? 'bg-[#FF6E97] text-white border-[#FF6E97] shadow-sm'
-                        : 'bg-[#FFF5F7] text-[#6F5B68] border-[#FFCCD7] hover:bg-[#FFEBF0]'
+                        ? 'btn-3d-option-selected'
+                        : 'btn-3d-option bg-[#FFF5F7] text-[#6F5B68] hover:bg-[#FFEBF0]'
                     }`}
                   >
                     {opt}
@@ -275,12 +278,12 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
               />
             </div>
 
-            {/* Submit Button */}
+            {/* 3D Submit Button */}
             <div className="pt-2">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 rounded-2xl sm:rounded-full bg-[#FF759D] hover:bg-[#FF5A88] active:scale-[0.99] disabled:opacity-70 text-white font-extrabold text-base sm:text-lg transition-all duration-200 cute-btn-shadow cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl sm:rounded-full btn-3d-pink disabled:opacity-70 text-white font-extrabold text-base sm:text-lg cursor-pointer flex items-center justify-center gap-2 select-none"
               >
                 {isSubmitting ? (
                   <>
@@ -303,9 +306,13 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
       </div>
 
       {/* Footer Text matching Screenshot 2 */}
-      <div className="text-center mt-7 sm:mt-9 text-sm sm:text-base font-medium text-[#775C6F] flex items-center justify-center gap-1.5 select-none">
-        <span>iStar with luv</span>
-        <span className="text-sm">🐾</span>
+      <div
+        onClick={onOpenAdmin}
+        className="text-center mt-7 sm:mt-9 text-sm sm:text-base font-medium text-[#775C6F] flex items-center justify-center gap-1.5 select-none cursor-pointer group"
+        title="Quản lý khảo sát"
+      >
+        <span className="group-hover:text-[#FF6E97] transition-colors">iStar with luv</span>
+        <span className="text-sm group-hover:scale-125 transition-transform">🐾</span>
       </div>
     </section>
   );

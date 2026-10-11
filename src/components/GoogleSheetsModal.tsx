@@ -457,7 +457,7 @@ function doGet(e) {
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white hover:bg-pink-100 text-gray-500 hover:text-gray-800 flex items-center justify-center transition-colors cursor-pointer text-lg font-bold border border-pink-100"
+            className="w-9 h-9 rounded-full btn-3d-secondary text-gray-600 flex items-center justify-center cursor-pointer text-base font-bold select-none"
           >
             ✕
           </button>
@@ -559,7 +559,7 @@ function doGet(e) {
                     <button
                       type="button"
                       onClick={handleSaveWebhook}
-                      className="px-5 py-2.5 rounded-xl bg-[#FF6E97] hover:bg-[#FF5886] text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer"
+                      className="px-5 py-2.5 rounded-2xl btn-3d-pink text-white text-xs sm:text-sm font-extrabold cursor-pointer select-none"
                     >
                       Lưu Webhook
                     </button>
@@ -568,7 +568,7 @@ function doGet(e) {
                         type="button"
                         onClick={handleTestWebhook}
                         disabled={isTestingWebhook}
-                        className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition-colors cursor-pointer disabled:opacity-60"
+                        className="px-4 py-2.5 rounded-2xl btn-3d-emerald text-white text-xs sm:text-sm font-extrabold cursor-pointer select-none disabled:opacity-60"
                       >
                         {isTestingWebhook ? 'Đang gửi...' : '🧪 Gửi thử'}
                       </button>
@@ -593,7 +593,7 @@ function doGet(e) {
                   <button
                     type="button"
                     onClick={handleCopyScript}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-50 hover:bg-pink-100 text-[#FF5886] text-xs font-bold border border-pink-200 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl btn-3d-secondary text-xs font-bold cursor-pointer select-none"
                   >
                     <span>{copiedScript ? '✓ Đã sao chép mã!' : '📋 Sao chép mã Apps Script'}</span>
                   </button>
@@ -651,7 +651,7 @@ function doGet(e) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleExportCSV}
-                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    className="px-3.5 py-2 rounded-2xl btn-3d-emerald text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer select-none"
                   >
                     <span>Xuất file Excel / CSV</span>
                     <span>📥</span>
@@ -661,7 +661,7 @@ function doGet(e) {
                     <button
                       onClick={handleSyncAll}
                       disabled={isSyncing}
-                      className="px-3.5 py-2 rounded-xl bg-[#FF6E97] hover:bg-[#FF5886] text-white text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                      className="px-3.5 py-2 rounded-2xl btn-3d-pink text-white text-xs font-bold flex items-center gap-1 cursor-pointer select-none"
                     >
                       {isSyncing ? 'Đang đồng bộ...' : 'Đồng bộ Sheet 🔄'}
                     </button>
@@ -669,7 +669,7 @@ function doGet(e) {
 
                   <button
                     onClick={requestClearAllResponses}
-                    className="px-3 py-2 rounded-xl border border-rose-200 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                    className="px-3.5 py-2 rounded-2xl btn-3d-danger text-xs font-bold cursor-pointer select-none"
                   >
                     Xóa sạch
                   </button>
@@ -868,7 +868,7 @@ function doGet(e) {
                     <button
                       onClick={handleCreateSheet}
                       disabled={isCreatingSheet}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#FF6E97] hover:bg-[#FF5886] text-white font-bold text-xs sm:text-sm transition-all cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full btn-3d-pink text-white font-extrabold text-xs sm:text-sm cursor-pointer select-none"
                     >
                       {isCreatingSheet ? 'Đang tạo Sheet...' : '✨ Tạo mới Google Sheet tự động'}
                     </button>
@@ -882,7 +882,7 @@ function doGet(e) {
                       />
                       <button
                         onClick={handleSaveCustomSheet}
-                        className="px-4 py-2 rounded-xl bg-gray-800 text-white text-xs font-bold"
+                        className="px-4 py-2 rounded-2xl btn-3d-secondary text-xs font-bold cursor-pointer select-none"
                       >
                         Lưu liên kết
                       </button>
@@ -898,7 +898,7 @@ function doGet(e) {
         <div className="px-6 py-4 border-t border-pink-100 bg-[#FFF9FA] flex justify-end">
           <button
             onClick={onClose}
-            className="px-6 py-2 rounded-full bg-[#FF6E97] hover:bg-[#FF5886] text-white font-bold text-sm cursor-pointer transition-colors"
+            className="px-7 py-2.5 rounded-full btn-3d-pink text-white font-extrabold text-sm cursor-pointer select-none"
           >
             Đóng
           </button>

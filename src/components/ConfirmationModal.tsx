@@ -108,11 +108,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-3 px-4 rounded-xl border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer text-sm"
+            className="flex-1 py-3 px-4 rounded-2xl btn-3d-secondary font-bold text-sm cursor-pointer select-none"
           >
             {cancelLabel}
           </button>
@@ -120,10 +120,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             type="button"
             onClick={handleConfirmClick}
             disabled={requiredSecurityCode ? !inputCode.trim() : false}
-            className={`flex-1 py-3 px-4 rounded-xl font-semibold text-white transition-all cursor-pointer text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
-              isDestructive
-                ? 'bg-rose-500 hover:bg-rose-600 active:bg-rose-700'
-                : 'bg-[#FF6E97] hover:bg-[#FF5886]'
+            className={`flex-1 py-3 px-4 rounded-2xl font-extrabold text-sm cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${
+              isDestructive ? 'btn-3d-danger' : 'btn-3d-pink'
             }`}
           >
             {confirmLabel}
