@@ -5,6 +5,8 @@ import {
   saveResponseLocally,
   appendRowToSheet,
   getStoredSheetId,
+  getStoredWebhookUrl,
+  sendSubmissionToWebhook,
 } from '../services/googleSheets';
 import { getAccessToken } from '../lib/firebase';
 
@@ -80,11 +82,25 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
     // 1. Save response locally first
     saveResponseLocally(submission);
 
-    // 2. Attempt sync to Google Sheets if token & sheet ID exist
+    // 2. Attempt sync via Webhook if configured
+    const webhookUrl = getStoredWebhookUrl();
+    if (webhookUrl) {
+      try {
+        const ok = await sendSubmissionToWebhook(webhookUrl, submission);
+        if (ok) {
+          submission.syncedToSheets = true;
+          setSyncStatus('synced');
+        }
+      } catch (e) {
+        console.warn('Webhook sync error:', e);
+      }
+    }
+
+    // 3. Attempt sync to Google Sheets via OAuth if token & sheet ID exist
     const token = getAccessToken();
     const sheetId = getStoredSheetId();
 
-    if (token && sheetId) {
+    if (!submission.syncedToSheets && token && sheetId) {
       try {
         await appendRowToSheet(token, sheetId, submission);
         submission.syncedToSheets = true;
@@ -93,7 +109,7 @@ export const SurveyForm: React.FC<SurveyFormProps> = ({
         console.warn('Could not auto-sync to Google Sheet immediately:', err);
         setSyncStatus('local_only');
       }
-    } else {
+    } else if (!submission.syncedToSheets) {
       setSyncStatus('local_only');
     }
 

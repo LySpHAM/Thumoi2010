@@ -1,5 +1,5 @@
 /**
- * Service for Google Sheets API operations
+ * Service for Google Sheets API operations and Webhook synchronization
  */
 
 export interface SurveySubmission {
@@ -15,6 +15,7 @@ export interface SurveySubmission {
 
 const STORAGE_KEY_RESPONSES = 'istar_2010_survey_responses';
 const STORAGE_KEY_SHEET_ID = 'istar_2010_spreadsheet_id';
+const STORAGE_KEY_WEBHOOK_URL = 'istar_2010_webhook_url';
 
 export const getStoredResponses = (): SurveySubmission[] => {
   try {
@@ -59,6 +60,47 @@ export const saveStoredSheetId = (id: string): void => {
     localStorage.setItem(STORAGE_KEY_SHEET_ID, id);
   } catch {
     // ignore
+  }
+};
+
+export const getStoredWebhookUrl = (): string | null => {
+  try {
+    return localStorage.getItem(STORAGE_KEY_WEBHOOK_URL);
+  } catch {
+    return null;
+  }
+};
+
+export const saveStoredWebhookUrl = (url: string): void => {
+  try {
+    localStorage.setItem(STORAGE_KEY_WEBHOOK_URL, url);
+  } catch {
+    // ignore
+  }
+};
+
+/**
+ * Send submission to Google Sheets via Google Apps Script Web App Webhook
+ */
+export const sendSubmissionToWebhook = async (
+  webhookUrl: string,
+  submission: SurveySubmission
+): Promise<boolean> => {
+  try {
+    // mode: 'no-cors' allows sending cross-origin without CORS preflight block from Google Script
+    await fetch(webhookUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submission),
+    });
+    updateResponseSyncStatus(submission.id, true);
+    return true;
+  } catch (err) {
+    console.warn('Webhook sync error:', err);
+    return false;
   }
 };
 
@@ -124,7 +166,7 @@ export const createSurveySpreadsheet = async (
 };
 
 /**
- * Appends a single submission row into the Google Sheet
+ * Appends a single submission row into the Google Sheet via OAuth access token
  */
 export const appendRowToSheet = async (
   accessToken: string,

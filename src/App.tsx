@@ -25,12 +25,14 @@ export default function App() {
     // Check initial responses count & sheet status
     const list = getStoredResponses();
     setResponseCount(list.length);
-    setHasSheetLinked(Boolean(getStoredSheetId()));
+    const isLinked = Boolean(getStoredSheetId() || localStorage.getItem('istar_2010_webhook_url'));
+    setHasSheetLinked(isLinked);
 
     const unsubscribe = initAuth(
       (user) => {
         setCurrentUser(user);
-        setHasSheetLinked(Boolean(getStoredSheetId()));
+        const linked = Boolean(getStoredSheetId() || localStorage.getItem('istar_2010_webhook_url'));
+        setHasSheetLinked(linked);
       },
       () => {
         setCurrentUser(null);
@@ -49,7 +51,8 @@ export default function App() {
   const handleDataUpdated = () => {
     const list = getStoredResponses();
     setResponseCount(list.length);
-    setHasSheetLinked(Boolean(getStoredSheetId()));
+    const linked = Boolean(getStoredSheetId() || localStorage.getItem('istar_2010_webhook_url'));
+    setHasSheetLinked(linked);
   };
 
   return (
