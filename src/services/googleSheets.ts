@@ -86,22 +86,61 @@ export const sendSubmissionToWebhook = async (
   webhookUrl: string,
   submission: SurveySubmission
 ): Promise<boolean> => {
+  const jsonBody = JSON.stringify(submission);
+  let success = false;
+
+  // Method 1: Fetch with 'text/plain;charset=utf-8' (CORS-safelisted header, works in no-cors)
   try {
-    // mode: 'no-cors' allows sending cross-origin without CORS preflight block from Google Script
     await fetch(webhookUrl, {
       method: 'POST',
       mode: 'no-cors',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain;charset=utf-8',
       },
-      body: JSON.stringify(submission),
+      body: jsonBody,
     });
-    updateResponseSyncStatus(submission.id, true);
-    return true;
+    success = true;
   } catch (err) {
-    console.warn('Webhook sync error:', err);
-    return false;
+    console.warn('Method 1 text/plain fetch failed:', err);
   }
+
+  // Method 2: Fallback with URLSearchParams (also CORS-safelisted)
+  if (!success) {
+    try {
+      const formData = new URLSearchParams();
+      formData.append('timestamp', submission.timestamp);
+      formData.append('name', submission.name);
+      formData.append('department', submission.department);
+      formData.append('grade', submission.grade);
+      formData.append('attending', submission.attending);
+      formData.append('notes', submission.notes || '');
+
+      await fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData,
+      });
+      success = true;
+    } catch (err) {
+      console.warn('Method 2 form-data failed:', err);
+    }
+  }
+
+  // Method 3: Fallback using navigator.sendBeacon
+  if (!success && typeof navigator !== 'undefined' && navigator.sendBeacon) {
+    try {
+      const blob = new Blob([jsonBody], { type: 'text/plain' });
+      navigator.sendBeacon(webhookUrl, blob);
+      success = true;
+    } catch (err) {
+      console.warn('Method 3 sendBeacon failed:', err);
+    }
+  }
+
+  if (success) {
+    updateResponseSyncStatus(submission.id, true);
+  }
+  return success;
 };
 
 /**

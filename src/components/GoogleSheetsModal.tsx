@@ -151,9 +151,32 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
 
   const appsScriptCode = `function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = JSON.parse(e.postData.contents);
-  sheet.appendRow([data.timestamp, data.name, data.department, data.grade, data.attending, data.notes]);
+  var data = {};
+  try {
+    if (e && e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    }
+  } catch (err) {
+    data = (e && e.parameter) ? e.parameter : {};
+  }
+  if (!data || Object.keys(data).length === 0) {
+    if (e && e.parameter) data = e.parameter;
+  }
+
+  sheet.appendRow([
+    data.timestamp || new Date().toLocaleString(),
+    data.name || "Thử nghiệm",
+    data.department || "",
+    data.grade || "",
+    data.attending || "",
+    data.notes || ""
+  ]);
+
   return ContentService.createTextOutput(JSON.stringify({ status: "success" })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  return doPost(e);
 }`;
 
   const handleCopyScript = () => {
