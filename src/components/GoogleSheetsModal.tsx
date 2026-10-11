@@ -408,15 +408,15 @@ function doGet(e) {
   const requestClearAllResponses = () => {
     setConfirmationState({
       isOpen: true,
-      title: 'Xóa toàn bộ phản hồi đã lưu?',
+      title: 'Xác thực bảo mật để xóa dữ liệu',
       message:
-        'Thao tác này sẽ xóa toàn bộ danh sách phản hồi khảo sát đã lưu trong ứng dụng này. Bạn có chắc chắn muốn tiếp tục không?',
+        'Hành động này sẽ xóa sạch toàn bộ danh sách phản hồi khảo sát đã lưu. Chỉ người quản trị có mã bảo mật mới có quyền thực hiện thao tác này.',
       action: () => {
         try {
           localStorage.removeItem('istar_2010_survey_responses');
           refreshResponses();
           setStatusMessage({
-            text: 'Đã xóa sạch dữ liệu phản hồi trong ứng dụng.',
+            text: 'Đã xác thực mã bảo mật thành công và xóa sạch danh sách phản hồi.',
             type: 'info',
           });
         } catch {
@@ -905,11 +905,13 @@ function doGet(e) {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Confirmation Modal with Security Passcode */}
       <ConfirmationModal
         isOpen={confirmationState.isOpen}
         title={confirmationState.title}
         message={confirmationState.message}
+        requiredSecurityCode="istar"
+        confirmLabel="Xác nhận xóa"
         onConfirm={confirmationState.action}
         onCancel={() => setConfirmationState((prev) => ({ ...prev, isOpen: false }))}
       />

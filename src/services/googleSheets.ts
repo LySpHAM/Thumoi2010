@@ -63,12 +63,19 @@ export const saveStoredSheetId = (id: string): void => {
   }
 };
 
-export const getStoredWebhookUrl = (): string | null => {
+export const DEFAULT_WEBHOOK_URL =
+  'https://script.google.com/macros/s/AKfycbxR8thyUE8einAig9jcfG6fmeRMolQXNJBhjPMfcJkUptD5tnTQ36hj6lajqN0112qi/exec';
+
+export const getStoredWebhookUrl = (): string => {
   try {
-    return localStorage.getItem(STORAGE_KEY_WEBHOOK_URL);
+    const custom = localStorage.getItem(STORAGE_KEY_WEBHOOK_URL);
+    if (custom && custom.trim()) {
+      return custom.trim();
+    }
   } catch {
-    return null;
+    // ignore
   }
+  return DEFAULT_WEBHOOK_URL;
 };
 
 export const saveStoredWebhookUrl = (url: string): void => {
@@ -87,27 +94,31 @@ export const sendSubmissionToWebhook = async (
   submission: SurveySubmission
 ): Promise<boolean> => {
   const jsonBody = JSON.stringify(submission);
-  let success = false;
 
-  // 1. Native Hidden Form Submit (Bypasses all CORS blocks, handles 302 redirects perfectly)
   try {
-    if (typeof document !== 'undefined') {
-      const iframeName = 'webhook_iframe_' + Date.now();
-      let iframe = document.getElementById('webhook_hidden_iframe') as HTMLIFrameElement;
+    // Send exactly 1 POST request with text/plain (CORS-safelisted, creates exactly 1 row)
+    await fetch(webhookUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: jsonBody,
+    });
+    updateResponseSyncStatus(submission.id, true);
+    return true;
+  } catch (err) {
+    console.warn('Fetch POST failed, attempting form fallback:', err);
+    try {
+      const iframeName = 'webhook_iframe_single';
+      let iframe = document.getElementById(iframeName) as HTMLIFrameElement;
       if (!iframe) {
         iframe = document.createElement('iframe');
-        iframe.id = 'webhook_hidden_iframe';
+        iframe.id = iframeName;
         iframe.name = iframeName;
         iframe.style.display = 'none';
-        iframe.style.position = 'absolute';
-        iframe.style.width = '0px';
-        iframe.style.height = '0px';
-        iframe.style.border = 'none';
         document.body.appendChild(iframe);
-      } else {
-        iframe.name = iframeName;
       }
-
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = webhookUrl;
@@ -131,50 +142,16 @@ export const sendSubmissionToWebhook = async (
 
       document.body.appendChild(form);
       form.submit();
-      setTimeout(() => form.remove(), 3000);
-      success = true;
+      setTimeout(() => form.remove(), 2000);
+      updateResponseSyncStatus(submission.id, true);
+      return true;
+    } catch (e2) {
+      console.warn('Form fallback failed:', e2);
+      return false;
     }
-  } catch (err) {
-    console.warn('Form submit fallback:', err);
   }
-
-  // 2. Fetch POST with text/plain
-  try {
-    await fetch(webhookUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
-      },
-      body: jsonBody,
-    });
-    success = true;
-  } catch (err) {
-    console.warn('Fetch POST failed:', err);
-  }
-
-  // 3. Fetch GET query string (calls doGet)
-  try {
-    const params = new URLSearchParams({
-      timestamp: submission.timestamp,
-      name: submission.name,
-      department: submission.department,
-      grade: submission.grade,
-      attending: submission.attending,
-      notes: submission.notes || '',
-    });
-    const getUrl = webhookUrl + (webhookUrl.includes('?') ? '&' : '?') + params.toString();
-    fetch(getUrl, { method: 'GET', mode: 'no-cors' }).catch(() => {});
-    success = true;
-  } catch (err) {
-    console.warn('Fetch GET failed:', err);
-  }
-
-  if (success) {
-    updateResponseSyncStatus(submission.id, true);
-  }
-  return success;
 };
+
 
 /**
  * Creates a formatted Google Sheet for the 20/10 party survey

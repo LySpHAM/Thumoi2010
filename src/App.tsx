@@ -10,7 +10,7 @@ import { InfoCards } from './components/InfoCards';
 import { SurveyForm } from './components/SurveyForm';
 import { GoogleSheetsModal } from './components/GoogleSheetsModal';
 import { MusicPlayer } from './components/MusicPlayer';
-import { getStoredResponses, getStoredSheetId } from './services/googleSheets';
+import { getStoredResponses, getStoredSheetId, getStoredWebhookUrl } from './services/googleSheets';
 import { initAuth, getAccessToken } from './lib/firebase';
 import { User } from 'firebase/auth';
 
@@ -18,14 +18,14 @@ export default function App() {
   const formRef = useRef<HTMLDivElement | null>(null);
   const [isSheetsModalOpen, setIsSheetsModalOpen] = useState(false);
   const [responseCount, setResponseCount] = useState(0);
-  const [hasSheetLinked, setHasSheetLinked] = useState(false);
+  const [hasSheetLinked, setHasSheetLinked] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
     // Check initial responses count & sheet status
     const list = getStoredResponses();
     setResponseCount(list.length);
-    const isLinked = Boolean(getStoredSheetId() || localStorage.getItem('istar_2010_webhook_url'));
+    const isLinked = Boolean(getStoredSheetId() || getStoredWebhookUrl());
     setHasSheetLinked(isLinked);
 
     const unsubscribe = initAuth(
@@ -51,7 +51,7 @@ export default function App() {
   const handleDataUpdated = () => {
     const list = getStoredResponses();
     setResponseCount(list.length);
-    const linked = Boolean(getStoredSheetId() || localStorage.getItem('istar_2010_webhook_url'));
+    const linked = Boolean(getStoredSheetId() || getStoredWebhookUrl());
     setHasSheetLinked(linked);
   };
 
