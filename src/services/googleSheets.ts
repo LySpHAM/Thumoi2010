@@ -89,7 +89,56 @@ export const sendSubmissionToWebhook = async (
   const jsonBody = JSON.stringify(submission);
   let success = false;
 
-  // Method 1: Fetch with 'text/plain;charset=utf-8' (CORS-safelisted header, works in no-cors)
+  // 1. Native Hidden Form Submit (Bypasses all CORS blocks, handles 302 redirects perfectly)
+  try {
+    if (typeof document !== 'undefined') {
+      const iframeName = 'webhook_iframe_' + Date.now();
+      let iframe = document.getElementById('webhook_hidden_iframe') as HTMLIFrameElement;
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'webhook_hidden_iframe';
+        iframe.name = iframeName;
+        iframe.style.display = 'none';
+        iframe.style.position = 'absolute';
+        iframe.style.width = '0px';
+        iframe.style.height = '0px';
+        iframe.style.border = 'none';
+        document.body.appendChild(iframe);
+      } else {
+        iframe.name = iframeName;
+      }
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = webhookUrl;
+      form.target = iframeName;
+      form.style.display = 'none';
+
+      const addInput = (k: string, v: string) => {
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = k;
+        inp.value = v;
+        form.appendChild(inp);
+      };
+
+      addInput('timestamp', submission.timestamp);
+      addInput('name', submission.name);
+      addInput('department', submission.department);
+      addInput('grade', submission.grade);
+      addInput('attending', submission.attending);
+      addInput('notes', submission.notes || '');
+
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(() => form.remove(), 3000);
+      success = true;
+    }
+  } catch (err) {
+    console.warn('Form submit fallback:', err);
+  }
+
+  // 2. Fetch POST with text/plain
   try {
     await fetch(webhookUrl, {
       method: 'POST',
@@ -101,40 +150,24 @@ export const sendSubmissionToWebhook = async (
     });
     success = true;
   } catch (err) {
-    console.warn('Method 1 text/plain fetch failed:', err);
+    console.warn('Fetch POST failed:', err);
   }
 
-  // Method 2: Fallback with URLSearchParams (also CORS-safelisted)
-  if (!success) {
-    try {
-      const formData = new URLSearchParams();
-      formData.append('timestamp', submission.timestamp);
-      formData.append('name', submission.name);
-      formData.append('department', submission.department);
-      formData.append('grade', submission.grade);
-      formData.append('attending', submission.attending);
-      formData.append('notes', submission.notes || '');
-
-      await fetch(webhookUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData,
-      });
-      success = true;
-    } catch (err) {
-      console.warn('Method 2 form-data failed:', err);
-    }
-  }
-
-  // Method 3: Fallback using navigator.sendBeacon
-  if (!success && typeof navigator !== 'undefined' && navigator.sendBeacon) {
-    try {
-      const blob = new Blob([jsonBody], { type: 'text/plain' });
-      navigator.sendBeacon(webhookUrl, blob);
-      success = true;
-    } catch (err) {
-      console.warn('Method 3 sendBeacon failed:', err);
-    }
+  // 3. Fetch GET query string (calls doGet)
+  try {
+    const params = new URLSearchParams({
+      timestamp: submission.timestamp,
+      name: submission.name,
+      department: submission.department,
+      grade: submission.grade,
+      attending: submission.attending,
+      notes: submission.notes || '',
+    });
+    const getUrl = webhookUrl + (webhookUrl.includes('?') ? '&' : '?') + params.toString();
+    fetch(getUrl, { method: 'GET', mode: 'no-cors' }).catch(() => {});
+    success = true;
+  } catch (err) {
+    console.warn('Fetch GET failed:', err);
   }
 
   if (success) {

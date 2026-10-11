@@ -152,20 +152,30 @@ export const GoogleSheetsModal: React.FC<GoogleSheetsModalProps> = ({
   const appsScriptCode = `function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = {};
-  try {
-    if (e && e.postData && e.postData.contents) {
+  
+  if (e && e.postData && e.postData.contents) {
+    try {
       data = JSON.parse(e.postData.contents);
+    } catch (err) {
+      data = e.parameter || {};
     }
-  } catch (err) {
-    data = (e && e.parameter) ? e.parameter : {};
-  }
-  if (!data || Object.keys(data).length === 0) {
-    if (e && e.parameter) data = e.parameter;
+  } else if (e && e.parameter) {
+    data = e.parameter;
+  } else {
+    // Dữ liệu mẫu khi bấm nút "▶ Chạy" trực tiếp trong Apps Script
+    data = {
+      timestamp: new Date().toLocaleString(),
+      name: "Chạy thử thành công 🌸",
+      department: "Ban Rap",
+      grade: "K20",
+      attending: "Chắc chắn có mặt nha! 🥳",
+      notes: "Kiểm tra kết nối Google Sheet"
+    };
   }
 
   sheet.appendRow([
     data.timestamp || new Date().toLocaleString(),
-    data.name || "Thử nghiệm",
+    data.name || "Ẩn danh",
     data.department || "",
     data.grade || "",
     data.attending || "",
