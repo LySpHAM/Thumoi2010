@@ -1,35 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 export const MusicPlayer: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const videoId = '4qNALNWoGmI'; // Official AMEE - Ưng Quá Chừng
 
   const sendIframeCommand = (func: string, args: any[] = []) => {
     if (iframeRef.current && iframeRef.current.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(
-        JSON.stringify({
-          event: 'command',
-          func,
-          args,
-        }),
-        '*'
-      );
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func,
+            args,
+          }),
+          '*'
+        );
+      } catch (err) {
+        console.warn('Iframe postMessage error:', err);
+      }
     }
   };
 
+  const startPlayback = () => {
+    sendIframeCommand('unMute');
+    sendIframeCommand('playVideo');
+    setIsPlaying(true);
+  };
+
   const togglePlay = () => {
-    setHasUserInteracted(true);
     if (isPlaying) {
       sendIframeCommand('pauseVideo');
       setIsPlaying(false);
     } else {
-      sendIframeCommand('playVideo');
-      setIsPlaying(true);
+      startPlayback();
     }
   };
 
@@ -44,16 +51,41 @@ export const MusicPlayer: React.FC = () => {
     }
   };
 
-  // Optional: Listen to first document click to start playing smoothly if desired
+  // Autoplay setup with automatic fallback on user interaction
   useEffect(() => {
-    const handleFirstClick = () => {
-      if (!hasUserInteracted) {
-        // We let the user choose or prompt
-      }
+    // Attempt play immediately on mount
+    const timer1 = setTimeout(() => {
+      startPlayback();
+    }, 500);
+
+    const timer2 = setTimeout(() => {
+      startPlayback();
+    }, 1500);
+
+    // Browsers require user interaction to unmute/play audio; listen to first user action
+    const onUserInteract = () => {
+      startPlayback();
+      // Remove listeners once interacted
+      window.removeEventListener('click', onUserInteract);
+      window.removeEventListener('touchstart', onUserInteract);
+      window.removeEventListener('scroll', onUserInteract);
+      window.removeEventListener('keydown', onUserInteract);
     };
-    window.addEventListener('click', handleFirstClick, { once: true });
-    return () => window.removeEventListener('click', handleFirstClick);
-  }, [hasUserInteracted]);
+
+    window.addEventListener('click', onUserInteract, { passive: true });
+    window.addEventListener('touchstart', onUserInteract, { passive: true });
+    window.addEventListener('scroll', onUserInteract, { passive: true });
+    window.addEventListener('keydown', onUserInteract, { passive: true });
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      window.removeEventListener('click', onUserInteract);
+      window.removeEventListener('touchstart', onUserInteract);
+      window.removeEventListener('scroll', onUserInteract);
+      window.removeEventListener('keydown', onUserInteract);
+    };
+  }, []);
 
   return (
     <aside aria-label="Music Player" className="fixed bottom-4 left-4 z-40 select-none">
@@ -63,11 +95,12 @@ export const MusicPlayer: React.FC = () => {
           ref={iframeRef}
           width="200"
           height="200"
-          src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0`}
+          src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0`}
           title="AMEE - Ưng Quá Chừng"
           allow="autoplay; encrypted-media"
           onLoad={() => {
-            // Iframe is ready
+            // Trigger play as soon as iframe loads
+            startPlayback();
           }}
         />
       </div>
@@ -143,7 +176,7 @@ export const MusicPlayer: React.FC = () => {
             <div className="flex items-center gap-2 text-[11px] text-[#775C6F] font-semibold">
               <span>AMEE</span>
               <span>•</span>
-              <span className="text-[#FF5886]">{isPlaying ? 'Đang phát' : 'Nhấn để nghe'}</span>
+              <span className="text-[#FF5886]">{isPlaying ? 'Đang tự phát meow' : 'Nhấn để nghe'}</span>
             </div>
           </div>
 
@@ -160,16 +193,14 @@ export const MusicPlayer: React.FC = () => {
             </button>
 
             {/* Mute Toggle */}
-            {isPlaying && (
-              <button
-                onClick={toggleMute}
-                type="button"
-                className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-800 flex items-center justify-center text-xs transition-colors cursor-pointer"
-                title={isMuted ? 'Bật âm thanh' : 'Tắt tiếng'}
-              >
-                {isMuted ? '🔇' : '🔊'}
-              </button>
-            )}
+            <button
+              onClick={toggleMute}
+              type="button"
+              className="w-8 h-8 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-800 flex items-center justify-center text-xs transition-colors cursor-pointer"
+              title={isMuted ? 'Bật âm thanh' : 'Tắt tiếng'}
+            >
+              {isMuted ? '🔇' : '🔊'}
+            </button>
           </div>
         </div>
 
@@ -180,7 +211,7 @@ export const MusicPlayer: React.FC = () => {
               <span>🎵 Ưng Quá Chừng - AMEE</span>
               <button
                 onClick={() => setIsExpanded(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 cursor-pointer"
               >
                 ✕
               </button>
@@ -189,7 +220,7 @@ export const MusicPlayer: React.FC = () => {
               &quot;Uầy uầy uầy meo meo meo meo trả lại tâm trí tôi đây... Cứ như mèo con ngắm trăng sao mà ngắm ai hoài zậy? 🐾&quot;
             </p>
             <div className="flex items-center justify-between text-[11px] pt-1">
-              <span className="text-gray-400">Nhạc nền 20/10</span>
+              <span className="text-gray-400">Nhạc tự phát 20/10</span>
               <a
                 href="https://www.youtube.com/watch?v=4qNALNWoGmI"
                 target="_blank"
