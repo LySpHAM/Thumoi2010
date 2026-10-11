@@ -1,0 +1,7 @@
+{
+  "name": "Tiệc 20/10 - Đăng Ký & Khảo Sát",
+  "description": "Trang web đăng ký và khảo sát tham dự buổi tiệc 20/10 dễ thương với bảng màu pastel và lưu dữ liệu vào Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

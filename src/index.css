@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #443341;
+    background-color: #FFF2F4;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+.cute-shadow {
+  box-shadow: 0 10px 25px -5px rgba(255, 130, 160, 0.12), 0 8px 10px -6px rgba(255, 130, 160, 0.08);
+}
+
+.cute-shadow-sm {
+  box-shadow: 0 4px 14px 0 rgba(255, 140, 170, 0.1);
+}
+
+.cute-btn-shadow {
+  box-shadow: 0 6px 20px -2px rgba(255, 105, 145, 0.35);
+}
+
+.font-cute-title {
+  font-family: 'Nunito', 'Comfortaa', cursive, sans-serif;
+}
+
+.font-cute-accent {
+  font-family: 'Mali', 'Nunito', cursive, sans-serif;
+}
+
+@keyframes gentle-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-gentle-bounce {
+  animation: gentle-bounce 3.5s ease-in-out infinite;
+}
+
+@keyframes swim {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(14px, -8px) rotate(5deg);
+  }
+  50% {
+    transform: translate(26px, 2px) rotate(-3deg);
+  }
+  75% {
+    transform: translate(12px, 8px) rotate(4deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+
+@keyframes swim-reverse {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(-14px, 8px) rotate(-5deg);
+  }
+  50% {
+    transform: translate(-28px, -2px) rotate(4deg);
+  }
+  75% {
+    transform: translate(-12px, -8px) rotate(-3deg);
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+}
+
+@keyframes float-paw {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) rotate(6deg) scale(1.06);
+  }
+}
+
+@keyframes float-paw-alt {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-16px) rotate(-8deg) scale(1.08);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+
+@keyframes float-note {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6) rotate(-10deg);
+  }
+  40% {
+    opacity: 0.9;
+    transform: translateY(-16px) scale(1) rotate(10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px) scale(0.8) rotate(-15deg);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-swim {
+  animation: swim 7s ease-in-out infinite;
+}
+
+.animate-swim-reverse {
+  animation: swim-reverse 8s ease-in-out infinite;
+}
+
+.animate-float-paw {
+  animation: float-paw 5s ease-in-out infinite;
+}
+
+.animate-float-paw-alt {
+  animation: float-paw-alt 6.5s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 10s linear infinite;
+}
